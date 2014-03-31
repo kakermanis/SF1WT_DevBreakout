@@ -1,0 +1,141 @@
+<!--
+// Copyright 2014, Kevin Akermanis - Sales Engineering, Salesforce.com Inc.
+// All rights reserved.
+//
+// Redistribution and use in source and binary forms, with or without
+// modification, are permitted provided that the following conditions are met:
+//
+// - Redistributions of source code must retain the above copyright notice,
+//   this list of conditions and the following disclaimer.
+// - Redistributions in binary form must reproduce the above copyright notice,
+//   this list of conditions and the following disclaimer in the documentation
+//   and/or other materials provided with the distribution.
+// - Neither the name of the salesforce.com nor the names of its contributors
+//   may be used to endorse or promote products derived from this software
+//   without specific prior written permission.
+//
+// THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+// AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+// IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+// DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE LIABLE
+// FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+// DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+// SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+// CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+// OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+// OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+-->
+<apex:page controller="CaseUpload" docType="html-5.0" showHeader="false" cache="true">
+
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"/>
+    <style>
+        html, body, p { 
+            font-family: "ProximaNovaSoft-Regular", Calibri, 
+                "Gill Sans", "Gill Sans MT", Candara, Segoe, 
+                "Segoe UI", Arial, sans-serif; 
+            font-size: 110%;
+        }
+        input { 
+            font-size: 95%; 
+
+        }
+        #content {
+            width: 300px ;
+        }
+
+        #mask {
+            width: 300px ;        
+        }
+        
+        /* iPhone 4 Portrait */
+        @media only screen and (min-device-width : 320px) and (max-device-width : 480px) and (orientation : portrait) {
+            #content {
+                width: 300px;
+                float: none;
+            }    
+
+        }
+    </style>
+
+</head>
+<body>
+
+<script type='text/javascript' src='/canvas/sdk/js/publisher.js'></script>
+<c:Style />    
+    
+    <div id="content">
+        <apex:form id="form" >
+            <div id="lastError">{!lastError}</div>
+
+            <p>
+                Choose a picture
+            </p>
+            <br/>
+            <div>
+                <apex:inputFile value="{!photoContent.VersionData}" filename="{!photoContent.PathOnClient}" accept="image/*"/>                
+                <apex:commandButton id="upload" value="Upload" action="{!save}" style="display:none" />
+            </div> 
+            <br/>
+            <p>
+                Tell us what's wrong
+            </p>
+            <div>
+                <apex:inputField value="{!theCase.subject}" style="width: 90%; display: block" />
+            </div>             
+            <br/>
+            <p>
+                We will record this location
+            </p>
+            <div id="display">
+                &nbsp;
+            </div>
+           
+            <br/>
+            <div style='height: 200px'>
+                <c:Map message="Locating Cases">
+                    onMapInitialized: function(position, address, city) {
+                        document.getElementById('{!$Component.form.latitude}').value = position.coords.latitude;
+                        document.getElementById('{!$Component.form.longitude}').value = position.coords.longitude;
+                        document.getElementById('{!$Component.form.address}').value = address;
+                        document.getElementById('{!$Component.form.city}').value = city;                    
+                        document.getElementById("display").innerHTML = address;
+                    }
+                </c:Map>
+            </div>
+
+            <div style='display:none'>
+                <apex:inputField type="text" value="{!theCase.Latitude__c}" id="latitude" />
+                <apex:inputField type="text" value="{!theCase.Longitude__c}" id="longitude" />
+                <apex:inputField type="text" value="{!theCase.Case_Address__c}" id="address" />
+                <apex:inputField type="text" value="{!theCase.Case_City__c}" id="city" />
+            </div>
+            
+            <script type="text/javascript">
+                // Post completed?
+                if (document.getElementById("lastError").innerHTML === "ok") {
+                    Sfdc.canvas.publisher.publish({name: "publisher.close", payload:{ refresh:"true"}});
+                }
+                
+                Sfdc.canvas.publisher.subscribe({name: "publisher.showPanel", onData:function(e) {
+                    Sfdc.canvas.publisher.publish({name: "publisher.setValidForSubmit", payload:"true"});
+                }});  
+                
+                Sfdc.canvas.publisher.subscribe({name: "publisher.post", onData:function(e) {
+                    document.getElementById("mask").style.display = "block";
+                    document.getElementById("{!$Component.form.upload}").click();
+                }});
+            
+        </script>
+
+        </apex:form>
+        <apex:pageMessages />
+    </div>
+    <div id='mask'>
+        <div class='progress'>
+            Uploading image with location and creating case
+        </div>
+    </div>  
+
+</body>    
+</apex:page>

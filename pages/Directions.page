@@ -1,0 +1,7 @@
+<apex:page StandardController="Case">
+	
+    <c:Style />
+    
+    <c:Directions address="{!Case.Case_Address__c}" />
+	
+</apex:page>

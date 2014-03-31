@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SF1WT - Dev Breakout</fullName>
+    <types>
+        <members>CaseUpload</members>
+        <members>CasesNearby</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>Directions</members>
+        <members>Map</members>
+        <members>Style</members>
+        <name>ApexComponent</name>
+    </types>
+    <types>
+        <members>CreateCase</members>
+        <members>Directions</members>
+        <members>Nearby</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Case.Case_Address__c</members>
+        <members>Case.Case_City__c</members>
+        <members>Case.Latitude__c</members>
+        <members>Case.Longitude__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Nearby_Cases</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>Geo_Case</members>
+        <name>QuickAction</name>
+    </types>
+    <types>
+        <members>HammerHammerHammerHammer</members>
+        <name>StaticResource</name>
+    </types>
+    <version>29.0</version>
+</Package>
